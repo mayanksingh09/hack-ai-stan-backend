@@ -28,14 +28,14 @@ Implement functionality to generate titles and tags for multiple social media pl
 
 ## 📋 **Phase 2: Data Models & Platform Definitions**
 
-- [ ] **Task 2.1: Platform Configuration Models**
+- [x] **Task 2.1: Platform Configuration Models**
   - Create Pydantic models for platform-specific rules:
     - `PlatformRules` base model
     - Platform-specific models for each platform (YouTube, Instagram, Facebook, TikTok, X, LinkedIn, Twitch)
   - Define character limits, content style guidelines, and tag requirements per platform
   - **Testing**: Validate model instantiation and field constraints
 
-- [ ] **Task 2.2: Content Generation Models**
+- [x] **Task 2.2: Content Generation Models**
   - Create `VideoTranscript` input model
   - Create `GeneratedContent` output model with title and tags
   - Create `PlatformContent` model for platform-specific generated content
