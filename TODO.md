@@ -11,14 +11,14 @@ Implement functionality to generate titles and tags for multiple social media pl
 
 ## 🏗️ **Phase 1: Project Foundation & Configuration**
 
-- [ ] **Task 1.1: Environment Setup**
+- [x] **Task 1.1: Environment Setup**
   - Set up OpenAI API key configuration using environment variables
   - Create `.env` file template with required API keys
   - Configure Pydantic AI with OpenAI provider
   - Test basic OpenAI connectivity
   - **Testing**: Verify API connection with a simple ping/test call
 
-- [ ] **Task 1.2: Project Structure Setup**
+- [x] **Task 1.2: Project Structure Setup**
   - Create core application structure in `/app` directory
   - Set up FastAPI application foundation
   - Create directory structure: `/models`, `/services`, `/routers`, `/config`, `/tests`
