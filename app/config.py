@@ -4,7 +4,7 @@ Handles environment variables and application settings.
 """
 import os
 from typing import Optional
-from pydantic import Field
+from pydantic import Field, ConfigDict
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
@@ -26,9 +26,7 @@ class Settings(BaseSettings):
     api_host: str = Field(default="localhost", env="API_HOST")
     api_port: int = Field(default=8000, env="API_PORT")
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = ConfigDict(env_file=".env", case_sensitive=False)
 
 
 def get_settings() -> Settings:

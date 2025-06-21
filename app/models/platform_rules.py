@@ -3,7 +3,7 @@ Platform-specific rules and configuration models for social media content genera
 Defines character limits, tag requirements, and content style guidelines for each platform.
 """
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from enum import Enum
 
 
@@ -40,8 +40,7 @@ class PlatformRules(BaseModel):
     style_guidelines: List[str]
     special_requirements: Optional[List[str]] = None
     
-    class Config:
-        use_enum_values = True
+    model_config = ConfigDict(use_enum_values=True)
 
 
 class YouTubeRules(PlatformRules):
