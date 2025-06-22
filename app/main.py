@@ -4,6 +4,7 @@ FastAPI application main entry point for Video Transcript to Social Media Conten
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
+from routers.content_generation import router as content_router
 
 # Create FastAPI application instance
 app = FastAPI(
@@ -22,6 +23,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
+app.include_router(content_router)
+
 
 @app.get("/")
 async def root():
@@ -29,7 +33,16 @@ async def root():
     return {
         "message": "Video Transcript to Social Media Content Generator API",
         "status": "running",
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "supported_platforms": ["YouTube", "Instagram", "Facebook", "TikTok", "X (Twitter)", "LinkedIn", "Twitch"],
+        "api_endpoints": {
+            "platforms": "/api/v1/platforms",
+            "single_generation": "/api/v1/generate/{platform}",
+            "batch_generation": "/api/v1/generate/batch",
+            "platform_rules": "/api/v1/platforms/{platform}/rules",
+            "health": "/api/v1/health",
+            "docs": "/docs"
+        }
     }
 
 
