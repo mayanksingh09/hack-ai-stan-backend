@@ -182,7 +182,7 @@ Always provide structured, actionable insights for social media content creation
         else:
             return "neutral"
     
-    def analyze_transcript_with_ai(self, transcript: VideoTranscript) -> TranscriptAnalysis:
+    async def analyze_transcript_with_ai(self, transcript: VideoTranscript) -> TranscriptAnalysis:
         """Analyze transcript using AI for detailed insights."""
         cleaned_content = self.clean_transcript(transcript.content)
         
@@ -220,8 +220,8 @@ Respond with JSON in this exact format:
 """
         
         try:
-            # Get AI analysis
-            result = self.agent.run_sync(analysis_prompt)
+            # Get AI analysis (async)
+            result = await self.agent.run(analysis_prompt)
             ai_response = result.output
             
             # Parse AI response
@@ -278,11 +278,11 @@ Respond with JSON in this exact format:
             estimated_reading_time=self.estimate_reading_time(cleaned_content)
         )
     
-    def process_transcript(self, transcript: VideoTranscript) -> Tuple[VideoTranscript, TranscriptAnalysis]:
+    async def process_transcript(self, transcript: VideoTranscript) -> Tuple[VideoTranscript, TranscriptAnalysis]:
         """Process transcript and return cleaned version with analysis."""
         try:
             # Analyze transcript
-            analysis = self.analyze_transcript_with_ai(transcript)
+            analysis = await self.analyze_transcript_with_ai(transcript)
             
             # Create enhanced transcript
             enhanced_transcript = VideoTranscript(

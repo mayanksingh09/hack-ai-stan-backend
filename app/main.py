@@ -37,8 +37,8 @@ async def root():
         "supported_platforms": ["YouTube", "Instagram", "Facebook", "TikTok", "X (Twitter)", "LinkedIn", "Twitch"],
         "api_endpoints": {
             "platforms": "/api/v1/platforms",
-            "single_generation": "/api/v1/generate/{platform}",
-            "batch_generation": "/api/v1/generate/batch",
+            "generate": "/api/v1/generate/{platform}",
+            "validate": "/api/v1/validate/{platform}",
             "platform_rules": "/api/v1/platforms/{platform}/rules",
             "health": "/api/v1/health",
             "docs": "/docs"

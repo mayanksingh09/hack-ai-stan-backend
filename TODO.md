@@ -132,13 +132,7 @@ Implement functionality to generate titles and tags for multiple social media pl
   - Add input validation and error handling
   - **Testing**: Test endpoint with valid/invalid inputs for each platform
 
-- [x] **Task 6.2: Multi-Platform Generation Endpoint**
-  - Create POST `/generate/batch` endpoint for multiple platforms
-  - Implement concurrent generation for multiple platforms
-  - Add progress tracking for batch operations
-  - **Testing**: Test batch processing with various platform combinations
-
-- [x] **Task 6.3: Platform Rules Information Endpoint**
+- [x] **Task 6.2: Platform Rules Information Endpoint**
   - Create GET `/platforms/{platform}/rules` endpoint
   - Return platform-specific constraints and guidelines
   - **Testing**: Verify correct rule information for each platform

@@ -31,7 +31,11 @@ class Settings(BaseSettings):
 
 def get_settings() -> Settings:
     """Get application settings instance."""
-    return Settings()
+    settings = Settings()
+    # Ensure OpenAI API key is set in environment for Pydantic AI
+    if settings.openai_api_key:
+        os.environ["OPENAI_API_KEY"] = settings.openai_api_key
+    return settings
 
 
 # Global settings instance

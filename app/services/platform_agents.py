@@ -464,15 +464,15 @@ class PlatformAgentManager:
         """Get specialized agent for a specific platform."""
         return self.agents[platform]
     
-    def generate_content(self, platform: PlatformType, transcript: VideoTranscript,
+    async def generate_content(self, platform: PlatformType, transcript: VideoTranscript,
                         tone: str = "neutral", include_emojis: bool = True) -> PlatformContent:
         """Generate content using platform-specific agent."""
         agent = self.get_agent(platform)
         prompt = agent._build_prompt(transcript, tone, include_emojis)
         
         try:
-            # Generate content using the specialized agent
-            result = agent.agent.run_sync(prompt)
+            # Generate content using the specialized agent (async)
+            result = await agent.agent.run(prompt)
             ai_response = result.output
             
             # Parse response
