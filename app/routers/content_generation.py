@@ -1,7 +1,9 @@
 """
 API endpoints for content generation - simplified version.
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from typing import Dict, Any
 import time
 import logging
@@ -17,10 +19,16 @@ from models.platform_rules import PlatformType, get_platform_rules
 from models.content import VideoTranscript, PlatformContent
 from services.orchestrator import get_content_orchestrator
 from services.content_validator import ContentValidator
+from config import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/v1", tags=["content-generation"])
 
+# Create limiter instance for this router
+limiter = Limiter(
+    key_func=get_remote_address,
+    storage_uri=settings.rate_limit_storage_uri
+)
 
 # Simple request model
 from pydantic import BaseModel
@@ -31,7 +39,8 @@ class GenerateContentRequest(BaseModel):
 
 
 @router.get("/platforms")
-async def get_supported_platforms():
+@limiter.limit(f"{settings.rate_limit_requests}/{settings.rate_limit_window}")
+async def get_supported_platforms(request: Request):
     """Get list of all supported platforms with their basic information."""
     platforms = {}
     
@@ -51,7 +60,8 @@ async def get_supported_platforms():
 
 
 @router.get("/platforms/{platform}/rules")
-async def get_platform_rules_endpoint(platform: str):
+@limiter.limit(f"{settings.rate_limit_requests}/{settings.rate_limit_window}")
+async def get_platform_rules_endpoint(platform: str, request: Request):
     """Get detailed rules and guidelines for a specific platform."""
     try:
         platform_type = PlatformType(platform)
@@ -113,7 +123,8 @@ async def get_platform_rules_endpoint(platform: str):
 
 
 @router.post("/generate/{platform}")
-async def generate_content_for_platform(platform: str, request: GenerateContentRequest):
+@limiter.limit(f"{settings.ai_generation_rate_limit}/{settings.ai_generation_window}")
+async def generate_content_for_platform(platform: str, data: GenerateContentRequest, request: Request):
     """Generate content for a specific platform from a video transcript."""
     start_time = time.time()
     
@@ -128,7 +139,7 @@ async def generate_content_for_platform(platform: str, request: GenerateContentR
     
     try:
         # Generate content with simplified orchestrator
-        content = await orchestrator.generate_content(platform_type, request.transcript)
+        content = await orchestrator.generate_content(platform_type, data.transcript)
         
         # Validate the generated content
         validator = ContentValidator()
@@ -157,7 +168,8 @@ async def generate_content_for_platform(platform: str, request: GenerateContentR
 
 
 @router.post("/validate/{platform}")
-async def validate_content(platform: str, content: PlatformContent):
+@limiter.limit(f"{settings.rate_limit_requests}/{settings.rate_limit_window}")
+async def validate_content(platform: str, content: PlatformContent, request: Request):
     """Validate existing content against platform rules."""
     # Validate platform
     try:
@@ -194,7 +206,8 @@ async def validate_content(platform: str, content: PlatformContent):
 
 
 @router.get("/health")
-async def health_check():
+@limiter.limit(f"{settings.rate_limit_requests}/{settings.rate_limit_window}")
+async def health_check(request: Request):
     """Check if the content generation service is healthy."""
     try:
         # Simple health check

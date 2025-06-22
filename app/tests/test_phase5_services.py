@@ -22,13 +22,11 @@ from services.content_validator import ContentValidator, ValidationSeverity, Val
 # Configure Pydantic AI for testing
 models.ALLOW_MODEL_REQUESTS = False
 
-# Use pytest-asyncio for async tests
-pytestmark = pytest.mark.asyncio
-
 
 class TestContentOrchestrator:
     """Test simplified content generation orchestrator."""
     
+    @pytest.mark.asyncio
     async def test_orchestrator_initialization(self):
         """Test that orchestrator initializes correctly."""
         orchestrator = ContentOrchestrator()
@@ -36,6 +34,7 @@ class TestContentOrchestrator:
         assert orchestrator.model_name == "gpt-4o"
         assert orchestrator.agent is not None
     
+    @pytest.mark.asyncio
     async def test_generate_content_success(self):
         """Test successful content generation using TestModel."""
         transcript = VideoTranscript(
@@ -67,6 +66,7 @@ class TestContentOrchestrator:
             assert len(content.tags) >= 10  # YouTube requires 10-15 tags
             assert content.confidence_score > 0.5
     
+    @pytest.mark.asyncio
     async def test_generate_content_fallback(self):
         """Test fallback content generation when AI fails."""
         transcript = VideoTranscript(
@@ -86,6 +86,7 @@ class TestContentOrchestrator:
             assert len(content.tags) >= 1
             assert content.confidence_score < 0.5  # Low confidence for fallback
     
+    @pytest.mark.asyncio
     async def test_generate_content_different_platforms(self):
         """Test content generation for different platforms."""
         transcript = VideoTranscript(

@@ -26,6 +26,15 @@ class Settings(BaseSettings):
     api_host: str = Field(default="localhost", env="API_HOST")
     api_port: int = Field(default=8000, env="API_PORT")
     
+    # Rate Limiting Configuration
+    rate_limit_requests: int = Field(default=100, env="RATE_LIMIT_REQUESTS")
+    rate_limit_window: str = Field(default="1 minute", env="RATE_LIMIT_WINDOW")
+    rate_limit_storage_uri: str = Field(default="memory://", env="RATE_LIMIT_STORAGE_URI")
+    
+    # Strict rate limits for resource-intensive endpoints
+    ai_generation_rate_limit: int = Field(default=10, env="AI_GENERATION_RATE_LIMIT")
+    ai_generation_window: str = Field(default="1 minute", env="AI_GENERATION_WINDOW")
+    
     model_config = ConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
 
