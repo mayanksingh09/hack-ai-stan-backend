@@ -60,15 +60,54 @@ async def get_platform_rules_endpoint(platform: str):
     
     rules = get_platform_rules(platform_type)
     
+    # Build response with all available fields
+    response_rules = {
+        "title_max_length": rules.title_max_length,
+        "tag_min_count": rules.tag_min_count,
+        "tag_max_count": rules.tag_max_count,
+        "content_style": rules.content_style,
+        "style_guidelines": rules.style_guidelines
+    }
+    
+    # Add optional length fields if they exist
+    optional_fields = [
+        ("description_max_length", "description"),
+        ("caption_max_length", "caption"),
+        ("post_max_length", "post_body"),
+        ("bio_max_length", "bio"),
+        ("username_max_length", "username"),
+        ("profile_name_max_length", "profile_name"),
+        ("comments_max_length", "comments"),
+        ("headline_max_length", "headline"),
+        ("about_max_length", "about_section"),
+        ("connection_message_max_length", "connection_message"),
+        ("stream_category_max_length", "stream_category")
+    ]
+    
+    available_fields = ["title", "tags"]  # Always available
+    for field_name, response_field in optional_fields:
+        field_value = getattr(rules, field_name, None)
+        if field_value is not None:
+            response_rules[field_name] = field_value
+            available_fields.append(response_field)
+    
+    # Add optimal length fields if they exist
+    optimal_fields = [
+        ("title_optimal_length", "title_optimal_length"),
+        ("description_optimal_length", "description_optimal_length"),
+        ("caption_optimal_length", "caption_optimal_length"),
+        ("post_optimal_length", "post_optimal_length")
+    ]
+    
+    for field_name, response_field in optimal_fields:
+        field_value = getattr(rules, field_name, None)
+        if field_value is not None:
+            response_rules[response_field] = field_value
+    
     return {
         "platform": platform,
-        "rules": {
-            "title_max_length": rules.title_max_length,
-            "tag_min_count": rules.tag_min_count,
-            "tag_max_count": rules.tag_max_count,
-            "content_style": rules.content_style,
-            "style_guidelines": rules.style_guidelines
-        },
+        "rules": response_rules,
+        "available_fields": available_fields,
         "special_requirements": rules.special_requirements if rules.special_requirements else []
     }
 

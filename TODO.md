@@ -40,19 +40,19 @@ For every supported platform (`youtube`, `instagram`, `facebook`, `tiktok`, `x_t
 ---
 
 ## 4. Validation Service  
-- [ ] Update `ContentValidator`:
+- [x] Update `ContentValidator`:
   - Character-limit checks for each new field.
   - Platform-specific heuristics (e.g. Instagram caption truncation, YouTube description SEO check ≥ 100 chars).
-- [ ] Adjust quality-score weighting to include new dimensions.
+- [x] Adjust quality-score weighting to include new dimensions.
 
 *Validation checkpoint → validator unit tests for edge-cases (too-long caption, empty LinkedIn post, etc.).*
 
 ---
 
 ## 5. API & Router Layer  
-- [ ] Modify `/generate/{platform}` response schema to surface new fields; keep backwards-compatibility via version bump or feature flag.
-- [ ] Update `/validate/{platform}` to evaluate new fields.
-- [ ] Ensure OpenAPI docs reflect changes.
+- [x] Modify `/generate/{platform}` response schema to surface new fields; keep backwards-compatibility via version bump or feature flag.
+- [x] Update `/validate/{platform}` to evaluate new fields.
+- [x] Ensure OpenAPI docs reflect changes.
 
 *Validation checkpoint → `app/tests/test_api_endpoints.py` extended & passing.*
 

@@ -139,7 +139,7 @@ class TestContentValidator:
         """Test that validator initializes correctly."""
         validator = ContentValidator()
         assert validator.quality_weights is not None
-        assert len(validator.quality_weights) == 5
+        assert len(validator.quality_weights) == 6  # Updated for expanded quality scoring dimensions
     
     def test_validate_content_success(self):
         """Test successful content validation."""
