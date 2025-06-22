@@ -59,7 +59,7 @@ For every supported platform (`youtube`, `instagram`, `facebook`, `tiktok`, `x_t
 ---
 
 ## 6. Tests  
-- [ ] Extend existing tests & create new ones in `app/tests` covering:
+- [x] Extend existing tests & create new ones in `app/tests` covering:
   - Model validation for new fields.
   - Successful generation & validation round-trip.
   - API contract (Pydantic/BaseModel changes reflected).
@@ -67,20 +67,20 @@ For every supported platform (`youtube`, `instagram`, `facebook`, `tiktok`, `x_t
 ---
 
 ## 7. Documentation  
-- [ ] Update `README.md` usage examples with new response payload.
-- [ ] Add `docs/examples/` with sample JSON per platform.
+- [x] Update `README.md` usage examples with new response payload.
+- [x] Add `docs/examples/` with sample JSON per platform.
 
 ---
 
 ## 8. CI & Tooling  
-- [ ] Ensure pre-commit, linters, and typing all succeed.
-- [ ] Update any CI workflows to run new tests & doc-linting.
+- [x] Ensure pre-commit, linters, and typing all succeed.
+- [x] Update any CI workflows to run new tests & doc-linting.
 
 ---
 
 ## 9. Final QA  
-- [ ] Manual smoke test via `uvicorn` & cURL or Swagger UI for at least three platforms.
-- [ ] Review API versioning & backward-compatibility notes.
+- [x] Manual smoke test via `uvicorn` & cURL or Swagger UI for at least three platforms.
+- [x] Review API versioning & backward-compatibility notes.
 
 ---
 
