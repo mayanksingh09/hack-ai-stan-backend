@@ -144,6 +144,8 @@ Respond with a JSON object in this exact format:
     "tags": ["#hashtag1", "#hashtag2", "#hashtag3"],
     "confidence": 0.85
 }}
+
+IMPORTANT: The "tags" array must contain comma-separated hashtag strings, each enclosed in quotes. Do not generate tags without proper comma separation.
 """
         return prompt
     
@@ -177,11 +179,15 @@ Respond with a JSON object in this exact format:
                     # Fallback parsing if JSON is malformed
                     ai_response = self._parse_fallback_response(ai_response)
             
+            # Process tags to handle cases where multiple hashtags are in one string
+            raw_tags = ai_response.get("tags", ["content"])
+            processed_tags = self._process_tags(raw_tags)
+            
             # Create platform content
             content = PlatformContent(
                 platform=request.platform,
                 title=ai_response.get("title", "Generated Title"),
-                tags=ai_response.get("tags", ["#content"]),
+                tags=processed_tags,
                 confidence_score=float(ai_response.get("confidence", 0.7))
             )
             
@@ -195,6 +201,40 @@ Respond with a JSON object in this exact format:
         except Exception as e:
             logger.error(f"Content generation failed for {request.platform.value}: {e}")
             raise
+    
+    def _process_tags(self, raw_tags: List[str]) -> List[str]:
+        """Process tags to handle cases where multiple hashtags are in one string."""
+        import re
+        processed_tags = []
+        
+        logger.debug(f"Processing raw tags: {raw_tags}")
+        
+        for tag in raw_tags:
+            if tag:
+                # Always try to extract hashtags using regex first
+                # More permissive pattern to handle various hashtag formats
+                found_hashtags = re.findall(r'#[A-Za-z0-9_]+', tag)
+                
+                logger.debug(f"Tag: '{tag}' -> Found hashtags: {found_hashtags}")
+                
+                if found_hashtags:
+                    # If we found hashtags, use them
+                    processed_tags.extend(found_hashtags)
+                else:
+                    # If no hashtags found, treat as single tag and add # if needed
+                    clean_tag = tag.strip()
+                    if clean_tag and not clean_tag.startswith('#'):
+                        clean_tag = f"#{clean_tag}"
+                    if clean_tag and clean_tag != "#":  # Avoid empty hashtags
+                        processed_tags.append(clean_tag)
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        processed_tags = [tag for tag in processed_tags if tag not in seen and not seen.add(tag)]
+        
+        logger.debug(f"Final processed tags: {processed_tags}")
+        
+        return processed_tags or ["#content"]
     
     def _parse_fallback_response(self, response_text: str) -> Dict[str, Any]:
         """Fallback parsing when JSON response is malformed."""
@@ -210,8 +250,10 @@ Respond with a JSON object in this exact format:
         tags = []
         if tags_match:
             tags_str = tags_match.group(1)
-            tags = [tag.strip(' "') for tag in tags_str.split(',')]
-            tags = [tag if tag.startswith('#') else f"#{tag}" for tag in tags if tag]
+            # Handle comma-separated tags
+            raw_tags = [tag.strip(' "') for tag in tags_str.split(',')]
+            # Use the same tag processing logic
+            tags = self._process_tags(raw_tags)
         
         confidence = float(confidence_match.group(1)) if confidence_match else 0.7
         
@@ -252,11 +294,15 @@ Respond with a JSON object in this exact format:
                     # Fallback parsing if JSON is malformed
                     ai_response = self._parse_fallback_response(ai_response)
             
+            # Process tags to handle cases where multiple hashtags are in one string
+            raw_tags = ai_response.get("tags", ["#content"])
+            processed_tags = self._process_tags(raw_tags)
+            
             # Create platform content
             content = PlatformContent(
                 platform=request.platform,
                 title=ai_response.get("title", "Generated Title"),
-                tags=ai_response.get("tags", ["#content"]),
+                tags=processed_tags,
                 confidence_score=float(ai_response.get("confidence", 0.7))
             )
             
@@ -285,6 +331,19 @@ Respond with a JSON object in this exact format:
         except Exception as e:
             logger.error(f"AI service connection test failed: {e}")
             return False
+    
+    def test_tag_processing(self) -> None:
+        """Test the tag processing functionality."""
+        test_cases = [
+            ["#AdviceHub #TechExperts #AICommunity #ExpertSignup"],
+            ["#single"],
+            ["#tag1", "#tag2 #tag3", "#tag4"],
+            ["nohashtag"],
+        ]
+        
+        for test_case in test_cases:
+            result = self._process_tags(test_case)
+            logger.info(f"Test input: {test_case} -> Output: {result}")
     
     def test_connection_sync(self) -> bool:
         """Synchronous test of AI service connection."""

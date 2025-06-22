@@ -40,6 +40,40 @@ Always respond with a title and appropriate tags for the requested platform."""
         
         return Agent(model=model, system_prompt=system_prompt)
     
+    def _process_tags(self, raw_tags):
+        """Process tags to handle cases where multiple hashtags are in one string."""
+        import re
+        processed_tags = []
+        
+        logger.debug(f"Processing raw tags: {raw_tags}")
+        
+        for tag in raw_tags:
+            if tag:
+                # Always try to extract hashtags using regex first
+                # More permissive pattern to handle various hashtag formats
+                found_hashtags = re.findall(r'#[A-Za-z0-9_]+', tag)
+                
+                logger.debug(f"Tag: '{tag}' -> Found hashtags: {found_hashtags}")
+                
+                if found_hashtags:
+                    # If we found hashtags, use them
+                    processed_tags.extend(found_hashtags)
+                else:
+                    # If no hashtags found, treat as single tag and add # if needed
+                    clean_tag = tag.strip()
+                    if clean_tag and not clean_tag.startswith('#'):
+                        clean_tag = f"#{clean_tag}"
+                    if clean_tag and clean_tag != "#":  # Avoid empty hashtags
+                        processed_tags.append(clean_tag)
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        processed_tags = [tag for tag in processed_tags if tag not in seen and not seen.add(tag)]
+        
+        logger.debug(f"Final processed tags: {processed_tags}")
+        
+        return processed_tags or ["#content"]
+    
     async def generate_content(self, platform: PlatformType, transcript: VideoTranscript) -> PlatformContent:
         """Generate content for a specific platform from a video transcript."""
         rules = get_platform_rules(platform)
@@ -66,6 +100,8 @@ Requirements:
 Respond in this exact format:
 Title: [your title here]
 Tags: #tag1, #tag2, #tag3, etc.
+
+IMPORTANT: Make sure tags are comma-separated. Do not put all hashtags in one continuous string.
 """
         
         try:
@@ -83,10 +119,9 @@ Tags: #tag1, #tag2, #tag3, etc.
                     title = line.replace("Title:", "").strip()
                 elif line.startswith("Tags:"):
                     tags_text = line.replace("Tags:", "").strip()
-                    # Extract hashtags
-                    tags = [tag.strip() for tag in tags_text.split(',')]
-                    # Ensure hashtags start with #
-                    tags = [f"#{tag.lstrip('#')}" if tag and not tag.startswith('#') else tag for tag in tags]
+                    # Extract hashtags using robust processing
+                    raw_tags = [tag.strip() for tag in tags_text.split(',')]
+                    tags = self._process_tags(raw_tags)
             
             # Create platform content
             content = PlatformContent(
