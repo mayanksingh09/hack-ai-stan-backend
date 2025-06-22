@@ -31,9 +31,9 @@ For every supported platform (`youtube`, `instagram`, `facebook`, `tiktok`, `x_t
 ---
 
 ## 3. Generation Logic  
-- [ ] **Orchestrator prompt update** so LLM returns the additional fields in a strict, parseable format (e.g. YAML or JSON block).
-- [ ] Extend `_parse_response` logic to extract new fields safely with fallbacks.
-- [ ] Ensure `_process_tags` still works & unit-tested.
+- [x] **Orchestrator prompt update** so LLM returns the additional fields in a strict, parseable format (JSON format implemented).
+- [x] Extend `_parse_response` logic to extract new fields safely with fallbacks.
+- [x] Ensure `_process_tags` still works & unit-tested.
 
 *Validation checkpoint → new fast unit test asserts that orchestrator parses mock LLM response containing all fields.*
 

@@ -44,9 +44,16 @@ class TestContentOrchestrator:
         
         orchestrator = ContentOrchestrator()
         
-        # Create custom TestModel output that will parse correctly
-        test_output = """Title: Complete AI Tutorial: Master Machine Learning
-Tags: #AI, #MachineLearning, #Tutorial, #Python, #Programming, #Education, #Technology, #Coding, #DataScience, #Development, #Learning, #Tech"""
+        # Create custom TestModel output in JSON format that will parse correctly
+        test_output = """
+        ```json
+        {
+          "title": "Complete AI Tutorial: Master Machine Learning",
+          "description": "Learn about AI and machine learning in this comprehensive tutorial covering all the essential concepts.",
+          "tags": ["#AI", "#MachineLearning", "#Tutorial", "#Python", "#Programming", "#Education", "#Technology", "#Coding", "#DataScience", "#Development", "#Learning", "#Tech"]
+        }
+        ```
+        """
         
         test_model = TestModel(custom_output_text=test_output)
         
@@ -87,11 +94,31 @@ Tags: #AI, #MachineLearning, #Tutorial, #Python, #Programming, #Education, #Tech
         
         orchestrator = ContentOrchestrator()
         
-        # Test outputs for different platforms
+        # Test outputs for different platforms in JSON format
         platform_outputs = {
-            PlatformType.YOUTUBE: "Title: Web Development Tutorial: Modern Frameworks Guide\nTags: #WebDevelopment, #Programming, #JavaScript, #React, #Vue, #Angular, #Tutorial, #Coding, #Frontend, #Backend, #FullStack, #Tech",
-            PlatformType.INSTAGRAM: "Title: Modern Web Dev Magic ✨🚀\nTags: " + ", ".join([f"#tag{i}" for i in range(1, 26)]),
-            PlatformType.TIKTOK: "Title: Web Dev in 60 seconds! 🔥\nTags: #WebDev, #Coding, #TechTok, #Programming"
+            PlatformType.YOUTUBE: """
+            ```json
+            {
+              "title": "Web Development Tutorial: Modern Frameworks Guide",
+              "description": "Master modern web development frameworks in this comprehensive guide covering React, Vue, Angular and more.",
+              "tags": ["#WebDevelopment", "#Programming", "#JavaScript", "#React", "#Vue", "#Angular", "#Tutorial", "#Coding", "#Frontend", "#Backend", "#FullStack", "#Tech"]
+            }
+            ```
+            """,
+            PlatformType.INSTAGRAM: """
+            {
+              "title": "Modern Web Dev Magic ✨🚀",
+              "caption": "Ready to level up your web dev skills? This tutorial covers the hottest frameworks! 🔥💻",
+              "tags": [""" + ", ".join([f'"#tag{i}"' for i in range(1, 26)]) + """]
+            }
+            """,
+            PlatformType.TIKTOK: """
+            {
+              "title": "Web Dev in 60 seconds! 🔥",
+              "caption": "Quick web development tips and tricks! Follow for more coding content 💻✨",
+              "tags": ["#WebDev", "#Coding", "#TechTok", "#Programming"]
+            }
+            """
         }
         
         for platform, output in platform_outputs.items():
