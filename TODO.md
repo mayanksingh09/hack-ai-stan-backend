@@ -20,11 +20,11 @@ For every supported platform (`youtube`, `instagram`, `facebook`, `tiktok`, `x_t
 ---
 
 ## 2. Model Layer  
-- [ ] **Expand PlatformRules**: add optional length/limit attributes for any new text fields (e.g. `description_max_length`, `caption_max_length`, `post_max_length`).
-- [ ] **Update PlatformContent**:
+- [x] **Expand PlatformRules**: add optional length/limit attributes for any new text fields (e.g. `description_max_length`, `caption_max_length`, `post_max_length`).
+- [x] **Update PlatformContent**:
   - Include optional fields per platform (e.g. `description`, `caption`, `post_body`).
   - Ensure Pydantic validation & `computed_field` helpers for new length counts.
-- [ ] Introduce `GenericPostText` type aliases if helpful to avoid bloating the model.
+- [x] ~~Introduce `GenericPostText` type aliases if helpful to avoid bloating the model~~ (Not needed - optional fields work well).
 
 *Validation checkpoint → mypy & unit tests for model validation pass.*
 
