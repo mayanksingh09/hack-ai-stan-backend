@@ -33,7 +33,7 @@ class ValidationIssue:
     field: str
     severity: ValidationSeverity
     message: str
-    current_value: Any
+    current_value: Any | None = None
     expected_value: Optional[Any] = None
     suggestion: Optional[str] = None
 

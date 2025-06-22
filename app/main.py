@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from routers.content_generation import router as content_router
+from routers.audio_transcription import router as audio_router
 
 # Create FastAPI application instance
 app = FastAPI(
@@ -25,6 +26,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(content_router)
+app.include_router(audio_router)
 
 
 @app.get("/")
