@@ -78,6 +78,18 @@ class PlatformContent(BaseModel):
     meets_requirements: bool = Field(default=False, description="Whether content meets platform requirements")
     validation_notes: Optional[List[str]] = Field(default_factory=list, description="Validation notes or warnings")
     
+    # Optional platform-specific text fields
+    description: Optional[str] = Field(None, description="Long-form description (YouTube, etc.)")
+    caption: Optional[str] = Field(None, description="Post caption (Instagram, TikTok, etc.)")
+    post_body: Optional[str] = Field(None, description="Main post text (Facebook, LinkedIn, X, etc.)")
+    bio: Optional[str] = Field(None, description="Profile bio/about section")
+    username: Optional[str] = Field(None, description="Suggested username")
+    profile_name: Optional[str] = Field(None, description="Profile display name")
+    headline: Optional[str] = Field(None, description="Professional headline (LinkedIn) or ad headline (Facebook)")
+    about_section: Optional[str] = Field(None, description="About section (LinkedIn)")
+    connection_message: Optional[str] = Field(None, description="LinkedIn connection message")
+    stream_category: Optional[str] = Field(None, description="Twitch stream category")
+    
     @computed_field
     @property
     def character_count(self) -> int:
@@ -90,6 +102,30 @@ class PlatformContent(BaseModel):
         """Calculate tag count from tags list."""
         return len(self.tags)
     
+    @computed_field
+    @property
+    def description_character_count(self) -> int:
+        """Calculate character count from description."""
+        return len(self.description) if self.description else 0
+    
+    @computed_field
+    @property
+    def caption_character_count(self) -> int:
+        """Calculate character count from caption."""
+        return len(self.caption) if self.caption else 0
+    
+    @computed_field
+    @property
+    def post_body_character_count(self) -> int:
+        """Calculate character count from post body."""
+        return len(self.post_body) if self.post_body else 0
+    
+    @computed_field
+    @property
+    def bio_character_count(self) -> int:
+        """Calculate character count from bio."""
+        return len(self.bio) if self.bio else 0
+    
     def validate_against_platform_rules(self, rules) -> bool:
         """Validate content against specific platform rules."""
         validation_notes = []
@@ -99,6 +135,60 @@ class PlatformContent(BaseModel):
         if self.character_count > rules.title_max_length:
             meets_requirements = False
             validation_notes.append(f"Title exceeds maximum length ({self.character_count}/{rules.title_max_length})")
+        
+        # Check description length
+        if self.description and rules.description_max_length:
+            if len(self.description) > rules.description_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Description exceeds maximum length ({len(self.description)}/{rules.description_max_length})")
+        
+        # Check caption length
+        if self.caption and rules.caption_max_length:
+            if len(self.caption) > rules.caption_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Caption exceeds maximum length ({len(self.caption)}/{rules.caption_max_length})")
+        
+        # Check post body length
+        if self.post_body and rules.post_max_length:
+            if len(self.post_body) > rules.post_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Post body exceeds maximum length ({len(self.post_body)}/{rules.post_max_length})")
+        
+        # Check bio length
+        if self.bio and rules.bio_max_length:
+            if len(self.bio) > rules.bio_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Bio exceeds maximum length ({len(self.bio)}/{rules.bio_max_length})")
+        
+        # Check username length
+        if self.username and rules.username_max_length:
+            if len(self.username) > rules.username_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Username exceeds maximum length ({len(self.username)}/{rules.username_max_length})")
+        
+        # Check profile name length
+        if self.profile_name and rules.profile_name_max_length:
+            if len(self.profile_name) > rules.profile_name_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Profile name exceeds maximum length ({len(self.profile_name)}/{rules.profile_name_max_length})")
+        
+        # Check headline length
+        if self.headline and rules.headline_max_length:
+            if len(self.headline) > rules.headline_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Headline exceeds maximum length ({len(self.headline)}/{rules.headline_max_length})")
+        
+        # Check about section length
+        if self.about_section and rules.about_max_length:
+            if len(self.about_section) > rules.about_max_length:
+                meets_requirements = False
+                validation_notes.append(f"About section exceeds maximum length ({len(self.about_section)}/{rules.about_max_length})")
+        
+        # Check connection message length
+        if self.connection_message and rules.connection_message_max_length:
+            if len(self.connection_message) > rules.connection_message_max_length:
+                meets_requirements = False
+                validation_notes.append(f"Connection message exceeds maximum length ({len(self.connection_message)}/{rules.connection_message_max_length})")
         
         # Check tag count
         if self.tag_count < rules.tag_min_count:
@@ -110,10 +200,11 @@ class PlatformContent(BaseModel):
         
         # Special case for X/Twitter - total character limit includes hashtags
         if self.platform == PlatformType.X_TWITTER:
-            total_chars = len(self.title) + sum(len(tag) + 1 for tag in self.tags)  # +1 for space before each tag
-            if total_chars > rules.title_max_length:
+            content_text = self.post_body or self.title
+            total_chars = len(content_text) + sum(len(tag) + 1 for tag in self.tags)  # +1 for space before each tag
+            if total_chars > rules.post_max_length:
                 meets_requirements = False
-                validation_notes.append(f"Total content exceeds character limit ({total_chars}/{rules.title_max_length})")
+                validation_notes.append(f"Total content exceeds character limit ({total_chars}/{rules.post_max_length})")
         
         self.meets_requirements = meets_requirements
         self.validation_notes = validation_notes

@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     api_host: str = Field(default="localhost", env="API_HOST")
     api_port: int = Field(default=8000, env="API_PORT")
     
-    model_config = ConfigDict(env_file=".env", case_sensitive=False)
+    model_config = ConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
 
 def get_settings() -> Settings:
